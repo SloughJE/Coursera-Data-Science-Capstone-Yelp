@@ -182,8 +182,6 @@ library(grid)
 img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ConfusionMatrixMulti.png")
  grid.raster(img)
 ```
-```{r,echo=FALSE}
-```
 ##Discussion 
 Sentiment analysis is a very important part of natural language processing and has been used in many areas such as predicting the stock market fluctuations, predicting election winners, to analyzing brand sentiment from Tweets. This exercise in creating a sentiment analysis has helped me understand how those models are built and has given me a good introduction to the field. Although my analysis is relatively simple, I benefited greatly from the work I put into creating it. Prior to this project I had not done any work in this area.
 
