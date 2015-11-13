@@ -1,0 +1,104 @@
+
+<style>
+.midcenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+</style>
+
+
+Text-based Sentiment Analysis and Classifier
+========================================================
+author: John Slough 
+date: November 20, 2015
+Capstone Project for Coursera Data Science Specialization
+
+
+<div class="midcenter" style="margin-left:-480px; margin-top:150px;">
+<img src="yelp5star.png" width="275"></img>
+</div>
+
+<div class="midcenter" style="margin-left:225px; margin-top:100px;">
+<img src="data_science_spec.jpg" width="175"></img>
+</div>
+
+
+The Data
+========================================================
+type: exclaim
+
+The data comes from the <a href="http://www.yelp.com/dataset_challenge" style="color: #CC0000"> Yelp</a> Dataset Challenge
+<small>
++ 1.6M reviews and 500K tips by 366K users for 61K businesses
++ Each text-based review also has star rating (1-5)
++ 481K business attributes, e.g., hours, parking availability, ambience.
++ Social network of 366K users for a total of 2.9M social edges.
++ Aggregated check-ins over time for each of the 61K businesses</small>
+
+<b>The task:</b> Identify a question or problem that you are interested in addressing with the data.
+
+<b>The question:</b> Can we predict the sentiment of restaurant reviews (positive or negative) from the words in the text?
+
+<small>This kind of analysis has wide-reaching <a href="http://www.sciencedirect.com/science/article/pii/S2090447914000550">applications</a> in multiple domains.</small>
+
+
+The Model and Results
+========================================================
+type: exclaim
+Natural Language Processing methods
+<small>
+- Data processed with R
+- Bag of words model
+- Including emoticon analysis
+- Logistic regression using <a href="https://dato.com/" style="color: #CC0000">Dato's</a> Graphlab module in Python
+- Accuracy of about 94% achieved on the testing dataset. 
+- Confusion Matrix (1 = positive sentiment)
+</small>
+<div class="midcenter" style="margin-left:100px; margin-top:50px;">
+<img src="ConfusionMatrix.png" width="400"></img>
+</div>
+
+<b>The answer:</b> Yes, we can.
+<br><br><br>
+Going further: Can we predict the number of stars of restaurant reviews (1-5) from the words in the text? 
+
+
+The Milti-Class Model and Results
+========================================================
+type: exclaim
+Natural Language Processing methods
+<small>
+- Same model as Sentiment Analysis
+- Including emoticon analysis
+- Multinomial logistic regression using <a href="https://dato.com/" style="color: #CC0000">Dato's</a> Graphlab module in Python
+- Accuracy of about 65% achieved on the testing dataset. 
+- Confusion Matrix 
+</small>
+<div class="midcenter" style="margin-left:150px; margin-top:-10px;">
+<img src="ConfusionMatrixMulti.png" width="400"></img>
+</div>
+
+<b>The answer:</b> Yes, we can, but not as well.
+<br><br><br>
+ 
+
+
+
+========================================================
+type: exclaim 
+<b>Emoticon Analysis</b>
+<small>
+It was interesting to see the results of the emoticon analysis. In the logistic regression model, the coefficients for positive  emoticons was 0.969, and negative was -0.585, indicating that they are, at least, in the correct direction.
+<br><br>
+For more information on this part of the analysis check out the <a href="https://github.com/SloughJE/Coursera-Data-Science-Capstone-Yelp/blob/master/YelpCapstone.R"" style="color: #CC0000">R-code</a>.
+Also be sure to check out the <a href="" style="color: #CC0000">full report</a>.
+</small><br><br>
+<b>Conclusion</b>
++ We successfully predicted the sentiment of Yelp reviews based on their text.
++ We less successfully predicted the star rating of Yelp reviews based on their text.
+
+<small>For a more detailed look at the code and analysis go to the 
+<a href="https://github.com/SloughJE/Coursera-Data-Science-Capstone-Yelp" style="color: #CC0000"> Github Repository</a>. Check out the most frequent <a href="https://statsbyslough.files.wordpress.com/2015/11/n_grams1.png" style="color: #CC0000">n-grams</a>.
+And be sure to check out the <a href="https://github.com/SloughJE/Coursera-Data-Science-Capstone-Yelp/blob/master/Analyzing%20Review%20Sentiment.ipynb" style="color: #CC0000">IPython notebook</a>.
+</small>

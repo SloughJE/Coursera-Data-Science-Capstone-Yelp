@@ -1,6 +1,5 @@
 ---
-title: 'Capstone Report for Data Science Specialization'
-subtitle: 'Coursera & Johns Hopkins University'
+title: "Capstone Report for Data Science Specialization"
 author: "John Slough II"
 date: "22 November 2015"
 output:
@@ -8,38 +7,42 @@ output:
     keep_tex: yes
   html_document: default
 header-includes: \usepackage{graphicx}
+subtitle: Coursera & Johns Hopkins University
 graphics: yes
 ---
+
+##Title
+This analysis is concerned with a sentiment analysis of text-based reviews from the Yelp Challenge Dataset. Using the bag of words model, the sentiment of reviews was successfully predicted. In addition, a multi-class model predicting the star rating (1-5) of the text reviews was explored, with less successful results.
 
 ##Introduction
 This capstone report for the Coursera Data Science Specialization from Johns Hopkins University will answer the question: Can we predict the sentiment of a textual review (positive or negative) from a corpus of restaurant and food service businesses reviews. In addition, a more granular prediction model will be explored using a subset of the data, i.e. predicting the number of stars from 1 to 5 given to a food service business from the review's text. 
 
-##The Dataset
+##Methods and Data
 The dataset was provided by Yelp, a website where users can rate business with a textual review and a 1-5 star review (whole stars). The dataset was provided on an academic license agreement. All analyses performed are purely for academic purposes.
 
 ###Analysis Software
 
 Because the main software used in this specialization was R, I chose to perform the data processing and exploration using R. However, Python proved to be much faster in building the prediction model with textual data. [Dato's GraphLab](https://dato.com/products/create/) platform was used to build the models. We are not limited to using R in this project so Python was used building the machine learning classification models.
 
-##Data Processing
+###Data Processing
 The data was originally in JSON form, in a total of 5 datasets connected by identifiers. The data contained reviews from businesses in 10 cities around the world. Only the 6 cities in the USA were selected to be analyzed to remove reviews in other languages, and other dialects of English.
 We will also limit the analysis to food service businesses, as the features of the reviews would not be similar for different kinds of businesses. Using the function 'grep' the variable 'categories of business' was searched for restaurants and business serving food. 
 
 ###Review Text Processing
 After the subset of the data and specific variables of interest were obtained some processing of the text was necessary.
 
+####Cleaning of the Review Text
+
+Taking advantage of the 'tm' package in R, the text was cleaned by removing numbers, punctuation, line break markings, and to convert everything to lower-case letters. [Stopwords](http://www.text-analytics101.com/2014/10/all-about-stop-words-for-text-mining.html) were removed as well. This is a common practice in natural language processing and makes it easier for features of the model to be constructed.
+
 ####Emoticons
 One feature of the text reviews is that many of them contain emoticons. These were incorporated in the building of the prediction model. A list of positive and negative emoticons from the R package 'qdap' was used. For each positive emoticon the word "emotismiley" was substituted and for each negative emoticon the word "emotifrowney" was substituted. In this way emoticons can be incorporated into the word count feature just like any other textual word. There were a total of 42,559 positive emoticons and 9,712 negative emoticons in the reviews.
 
-####Cleaning of the Review Text
-
-Taking advantage of the 'tm' package in R, the text was cleaned by removing numbers, punctuation, line break markings, and to convert everything to lower-case letters. This is a common practice in natural language processing and makes it easier for features of the model to be constructed.
-
-##Data Exploration
+###Data Exploration
 
 ```{r,echo=FALSE,cache=TRUE,message=FALSE,warning=FALSE}
 
-yelp_full=readRDS("combined_emoti.RDS")
+yelp_full=Yelp_reviews = read.table("Yelp_reviews.txt",stringsAsFactors = FALSE)
 
 five=subset(yelp_full, yelp_full$stars==5)
 four=subset(yelp_full, yelp_full$stars==4)
@@ -69,7 +72,7 @@ library(ggthemes)
 library(ggplot2)
 options(scipen=999) # remove sci notation
 
-gg = ggplot(yelp_full, aes(x=stars)) +xlab("Stars") + ylab("Count")
+gg = ggplot(yelp_full, aes(x=stars)) +xlab("stars") + ylab("frequency")
 gg = gg + geom_histogram(fill="skyblue",binwidth = .5,origin = -0.5) 
 gg = gg + theme_light()+ggtitle("Histogram of Stars")+scale_x_discrete(limits=c(1:5))
 gg = gg + scale_y_continuous(limits = c(0,400000))
@@ -82,49 +85,54 @@ There were a total of `r num_bus` establishments providing food service which me
 An example of a review is taken from the business with the id: wx2EJUCNOCPrMC0DtKb98A.
 The name of that establishment is "Brooklyn Bagel Deli" There are `r length(BBD$text)` reviews of the deli. An excerpt (after text processing) from a review of this restaurant is: 
 
-"Their cream cheese to go is hand packed  which they have a large selection of flavors   think salmon  strawberry  cheddar bacon  veggie   more  and they have a very large selection of beverages   snacks  My daughter loves picking up a Belly Washer and a Go Gurt to go with her chocolate chip bagel emotismiley They have a Monday Madness special running right now   buy  bagels and get  free  You can t beat that  If you are currently frequenting other bagel shops  I challenge you to try Brooklyn  just one time  I did many years ago and now I m hooked""
+"Their cream cheese to go is hand packed  which they have a large selection of flavors think salmon  strawberry cheddar bacon veggie more and they have a very large selection of beveragessnacks My daughter loves picking up a Belly Washer and a Go Gurt to go with her chocolate chip bagel emotismiley...""
 
 This reviewer gave the restaurant `r stars_BBD` stars. The mean number of stars for all reviews of this restaurant was `r BBD_mean`.
 
+####N-grams
+[N-grams](http://www.text-analytics101.com/2014/11/what-are-n-grams.html) were analyzed using the *quanteda* package in R. Below is a chart of the most common n-grams, divided into positive and negative reviews based on their star rating (1 or 2 stars are negative, 4 or 5 are positive). See the full size 
+[here](https://statsbyslough.files.wordpress.com/2015/11/n_grams1.png).
+```{r fig.width=10, fig.height=3,fig.align='center',echo=FALSE}
+library(png)
+library(grid)
+N_grams <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/N_grams.png")
+grid.raster(N_grams)
+```
+We can see that it is unclear if the uni-grams are positive or negative, however it is pretty clear that the bi-grams are positive or negative. Tri-grams are easily differentiated ("will definitely go back" versus "never go back"). Some of the negative n-grams clearly would have a negation such as "not." Unfortunately some of these are included in the stopwords which were removed. This is a limitation of this kind of modeling. 
 
-##Binary Classifier Model
+###The Model
 
-The first model we will look at is just a simple binary classifier. This classifier will aim to answer the question: Is the review positive or negative?
+The first model we will look at is just a simple binary classifier. This classifier will aim to answer the question: Is the review positive or negative based on the text?
 Each review was labeled as 1 for positive and 0 for negative, determined by the number of stars. All 4 and 5 star reviews were classified as positive and all 1 and 2 star reviews were classified as negative. All 3 star reviews were removed from the analysis because they were considered to express a neutral sentiment and were therefore not applicable in this model. 
 
 The model was trained on data selected by randomly splitting the entire dataset into a 70% training and 30% testing dataset.
 
-
-Adding features such as n-grams (bi or tri) did not increase the accuracy and significantly increased computation time so they were not included in the final model.
+Adding features such as n-grams (where n > 1) did not increase the accuracy on the training dataset and significantly increased computation time so they were not included in the final model.
 
 The final model uses the 'bag of words' approach or 1-gram counts. This was created using graphlab's function 'text_analytics.count_words,' which counts words in each review. 
-The model is based on logistic regression which predicts the sentiment of the text. 
 
-Multiple algorithms such as random forests and support vector machines were explored, however logistic regression gave the most accurate results in the training and testing datasets. This is beneficial because the results are easily interpreted.
+Multiple algorithms such as random forests, naive Bayes, and support vector machines were explored, however logistic regression gave the most accurate results in the training dataset. This is beneficial because the results are easily interpreted.
 
-##Evaluation of the Model
+###Evaluation of the Model
 
-The trained model was applied to the test dataset and the accuracy was 0.941. The confusion matirx is shown below. 1 is positive and 0 is negative sentiment.
-```{r fig.width=2, fig.height=4,echo=FALSE,fig.align='left'}
-library(png)
-library(grid)
-img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ConfusionMatrix.png")
- grid.raster(img)
+The trained model was applied to the test dataset and the accuracy was 0.942. The confusion matirx is shown below. 1 is positive and 0 is negative sentiment.
+```{r fig.width=1.4,echo=FALSE,fig.align='left'}
+
+CF_matrix1 <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ConfusionMatrix.png")
+grid.raster(CF_matrix1)
 ```
-
 The figure below shows the ROC curve for the logistic regression model.
-```{r fig.width=3, fig.height=6,echo=FALSE,fig.align='left'}
-library(png)
-library(grid)
-img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ROC.png")
- grid.raster(img)
+```{r fig.width=2.2,echo=FALSE,fig.align='left'}
+
+ROC <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ROC.png")
+ grid.raster(ROC)
 ```
 
 ###Model Applied to a Specific Business
 As an example of the output, the model was applied to the the Bagel Deli discussed above. An excerpt from the table including the reviews and sentiment analysis probability is shown below. Overall, it appears that the classifier does well in predicting the sentiment of the review. 
 
 ####Most Positive Reviews by Predicted Sentiment
-```{r fig.width=3, fig.height=6,echo=FALSE,fig.align='left'}
+```{r fig.width=3,echo=FALSE,fig.align='left'}
 library(png)
 library(grid)
 img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/BBD_pos.png")
@@ -132,62 +140,37 @@ img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Speciali
 ```
 
 ####Most Negative Reviews by Predicted Sentiment
-```{r fig.width=3, fig.height=6,echo=FALSE,fig.align='left'}
+```{r fig.width=3,echo=FALSE,fig.align='left'}
 library(png)
 library(grid)
 img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/BBD_neg.png")
  grid.raster(img)
 ```
-##Most Frequent Positive and Negative Words
-Using the Lasso technique, which shrinks coefficients towards 0 by introducing bias but reducing variance thus indicating which features are not useful for the model, a new model was trained to find the most important positive and negative words. A summary of the top 10 positive and negative words, determined by their regression coefficient, is shown below. With the L1 (lasso) penalty, the number of non-zero coefficients was reduced to 1280, from 173,539. This model was better to determine the more influential coefficients (words) however, I chose not to impliment this model for sentiment prediction, as it significantly reduced the accuracy. 
-
-####Positive Words
-Word  | Coeff. Value
-------------- | -------------
-friendly  | 0.02861
-awesome   | 0.02707
-gem       | 0.02701
-highly    | 0.02698
-fantastic | 0.02689
-yummy     | 0.02629
-delicious | 0.02617
-favorite  | 0.02607
-reasonable| 0.02595
-excellent | 0.02542
-
-####Negative Words
-Word  | Coeff. Value
-------------- | -------------
-worst      | -0.03268
-horrible   | -0.02798
-terrible   | -0.02438
-awful      | -0.02391
-disgusting | -0.02356
-tasteless  | -0.02341
-mediocre   | -0.02313
-rude       | -0.02222
-worse      | -0.01981
-poor       | -0.01932
-
 
 ##Multi-class Model
 A model to predict the star rating of the review based on the text was created as well, using the testing and training data. Here we are using a multinomial logistic regression model. The same feature were used in this model as in the sentiment model.
 
+##Results
 ###Evaluation of the Model
 
 Applied to the test dataset, the model achieved a 64.7% accurancy in predicting the star rating of the review based on the text. The confusion matirx is shown below.
-```{r fig.width=2.5, fig.height=3.5,echo=FALSE,fig.align='left'}
+```{r fig.width=2,echo=FALSE,fig.align='left'}
 library(png)
 library(grid)
-img <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ConfusionMatrixMulti.png")
- grid.raster(img)
+CF_multi <- readPNG("/Users/johnslough/Desktop/Courses/Coursera/Data Science Specialization/CapstoneYelp/data/yelp_dataset_challenge_academic_dataset/ConfusionMatrixMulti.png")
+ grid.raster(CF_multi)
 ```
 ##Discussion 
 Sentiment analysis is a very important part of natural language processing and has been used in many areas such as predicting the stock market fluctuations, predicting election winners, to analyzing brand sentiment from Tweets. This exercise in creating a sentiment analysis has helped me understand how those models are built and has given me a good introduction to the field. Although my analysis is relatively simple, I benefited greatly from the work I put into creating it. Prior to this project I had not done any work in this area.
+In this instance, the sentiment analysis was very successful, with a high accuracy rate. The multi-class prediction model was less succsussful and would need more tuning and more features.
 
-###Limitations
+####Emoticons
+The inclusion of the emoticons in the analysis resulted in coefficients being produced for the sentiment analysis model for positive and negative emoticons. These were 0.969 and -0.585, respecively, which indicates that they were in the logical directions. While they were not very influention on the predictions, due to the relatively small number of reviews that contained emoticons, this kind of analysis could be very beneficial for text with higher instances of emoticons. 
+
+###Limitations and Further Work
 This model was trained on reviews for food service businesses in the USA. As such, it may not be generalizable to other kinds of reviews or in other locations. 
+An exploration of reducing the features would be optimal for the multi-class model, as the computation time was relatively long. In addition, reducing the features would speed up the sentiment analysis if larger datasets were used. The next step would be to identify the most important words in the reviews for prediction. 
 
-##Conclusion
+###Conclusion
 
-The prediction model was succesful in classifying reviews as positve or negative, with an accuracy of about 94% on the test dataset. The multi-class model was not as successful, only achieving an accuracy of 64.75 on the test dataset, however this was better than expected. Most importantly, I have gained much more knowledge and appreciation of this field.
+The prediction model was succesful in classifying reviews as positve or negative, with an accuracy of about 94% on the test dataset. The multi-class model was not as successful, only achieving an accuracy of 64.7% on the test dataset, however this was better than expected. Most importantly, I have gained much more knowledge and appreciation of this field.
