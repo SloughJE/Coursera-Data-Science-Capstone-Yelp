@@ -70,10 +70,10 @@ one=subset(Yelp_reviews, Yelp_reviews$stars==1)
 emot_neg=read.table("emot_neg.txt")
 emot_pos=read.table("emot_pos.txt")
 
-## substitute emoticons for word "emotismiley" or "emotifrowney"
+## substitute emoticons for word " emotismiley " or " emotifrowney "
 
-Yelp_reviews$text=mgsub(as.character(emot_neg[[1]]),"emotifrowney" , Yelp_reviews$text)
-Yelp_reviews$text=mgsub(as.character(emot_pos[[1]]), "emotismiley", Yelp_reviews$text)
+Yelp_reviews$text=mgsub(as.character(emot_neg[[1]])," emotifrowney " , Yelp_reviews$text)
+Yelp_reviews$text=mgsub(as.character(emot_pos[[1]]), " emotismiley ", Yelp_reviews$text)
 
 length(grep("emotismiley",Yelp_reviews$text))
 length(grep("emotifrowney",Yelp_reviews$text))
@@ -95,5 +95,6 @@ write.csv(Yelp_reviews,"Yelp_reviews.csv",row.names = FALSE)
 
 ### get example review
 BBD <- Yelp_reviews[ which(Yelp_reviews$id=="wx2EJUCNOCPrMC0DtKb98A"), ]
+grep("emotismiley",BBD$text)
 BBD$text[40]
 BBD$stars[40]
