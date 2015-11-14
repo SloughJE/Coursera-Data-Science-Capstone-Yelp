@@ -93,9 +93,7 @@ Yelp_reviews$text=str_trim(Yelp_reviews$text, side = "both")
 write.table(Yelp_reviews,"Yelp_reviews.txt")
 write.csv(Yelp_reviews,"Yelp_reviews.csv",row.names = FALSE)
 
-num_rows=nrow(Yelp_reviews)
-
-Yelp_reviews_sample = Yelp_reviews[sample(num_rows, num_rows*.05), ]
-
-write.table(Yelp_reviews_sample,"Yelp_reviews_sample.txt")
-write.csv(Yelp_reviews_sample,"Yelp_reviews_sample.csv",row.names = FALSE)
+### get example review
+BBD <- Yelp_reviews[ which(Yelp_reviews$id=="wx2EJUCNOCPrMC0DtKb98A"), ]
+BBD$text[40]
+BBD$stars[40]
